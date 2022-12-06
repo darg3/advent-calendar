@@ -1,0 +1,32 @@
+h2 {
+  text-align: center;
+}
+
+.container {
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  align-content: center;
+  justify-items: center;
+}
+
+.button {
+  width: 7rem;
+  height: 3rem;
+  background-color: #000000;
+  color: #ffffff;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin: 10px;
+  text-align: center;
+  align-items: center;
+  align-content: center;
+}
+
+div:hover {
+  cursor: pointer;
+  background-color: blue;
+  transition: all 1s ease;
+  transform: rotate(720deg);
+}
