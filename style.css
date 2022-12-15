@@ -1,3 +1,7 @@
+* {
+  background-color: rgb(198, 156, 156);
+}
+
 h2 {
   text-align: center;
 }
@@ -12,30 +16,34 @@ h2 {
   overflow: hidden;
 }
 
+.curtain1 {
+  margin: 0 auto;
+  width: 100%; /* Ensures the component is the full screen width */
+  height: 2rem; /* We're using this for demo purposes */
+  overflow: hidden; /* Allows us to slide the panels outside the container without them showing */
+}
+
+.curtain__wrapper {
+  width: 100%;
+  height: 100%;
+}
+
 .curtain__panel {
-  width: 50%;
-  height: 100vh;
+  width: 100%;
+  height: 10vh;
   background: orange;
-  float: left;
-  position: relative;
+  float: left; /*panels are side by side*/
+  position: relative; /*Needed to define z-index*/
   z-index: 2;
+
+  /* display: flex; */
 }
 
 .prize {
-  background: 333;
+  background: #333;
   position: absolute;
   z-index: 1;
-  /* width: 100%;
-  height: 100%; */
-}
-
-input[type="checkbox"] {
-  position: absolute; /* Force the checkbox at the start of the container */
-  cursor: pointer; /* Indicate the curtain is clickable */
-  width: 100%; /* The checkbox is as wide as the component */
-  height: 100%; /* The checkbox is as tall as the component */
-  z-index: 100; /* Make sure the checkbox is on top of everything else */
-  opacity: 0; /* Hide the checkbox */
+  width: 100%;
 }
 
 /* When the checkbox is checked... */
@@ -50,6 +58,38 @@ input[type="checkbox"]:checked ~ div.curtain__panel--right {
   transform: translateX(0);
 }
 
+input[type="checkbox"] {
+  position: absolute; /* Force the checkbox at the start of the container */
+  cursor: pointer; /* Indicate the curtain is clickable */
+  width: 100%; /* The checkbox is as wide as the component */
+  height: 100vh; /* The checkbox is as tall as the component */
+  z-index: 100; /* Make sure the checkbox is on top of everything else */
+  opacity: 0; /*Hide the checkbox*/
+  top: 0;
+  left: 0;
+}
+.curtain__panel {
+  background: rgb(82, 105, 57);
+  align-items: center;
+  width: 50%; /* Each panel takes up half the container */
+  height: 10vh; /* Used for demo purposes */
+  float: left; /* Makes sure panels are side-by-side */
+  position: relative; /* Needed to define the z-index */
+  z-index: 2; /* Places the panels in front of the prize */
+  transition: all 1s ease-out; /* Animates the sliding transition */
+}
+
+/* Slide the panel to the left out of the container */
+.curtain__panel--left {
+  justify-content: flex-end;
+  transform: translateX(-100%);
+}
+
+/* Slide the panel to the right out of the container */
+.curtain__panel--right {
+  transform: translateX(100%);
+  /* justify-content: flex-end; */
+}
 .button {
   width: 7rem;
   height: 3rem;
@@ -66,11 +106,12 @@ input[type="checkbox"]:checked ~ div.curtain__panel--right {
 /* div:hover {
   cursor: pointer;
   background-color: blue;
-  transition: all 1s ease; */
-  /* transform: translateX(100%); */
-}
+  transition: all 1s ease;
+  transform: translateX(100%);
+} */
+
 /* https: ; //css-tricks.com/creating-css-sliding-door-effect/ */
 
-.button__wrapper {
+/* .button__wrapper {
   overflow: hidden;
-}
+} */
