@@ -16,11 +16,22 @@ h2 {
   overflow: hidden;
 }
 
-.curtain1 {
+.check {
+  position: absolute;
+  cursor: pointer;
+  width: 24%;
+  height: 8vh;
+  z-index: 100;
+}
+
+.curtain {
   margin: 0 auto;
   width: 100%; /* Ensures the component is the full screen width */
   height: 2rem; /* We're using this for demo purposes */
   overflow: hidden; /* Allows us to slide the panels outside the container without them showing */
+  padding: 3rem;
+  align-self: center;
+  justify-self: center;
 }
 
 .curtain__wrapper {
@@ -28,22 +39,13 @@ h2 {
   height: 100%;
 }
 
-.curtain__panel {
-  width: 100%;
-  height: 10vh;
-  background: orange;
-  float: left; /*panels are side by side*/
-  position: relative; /*Needed to define z-index*/
-  z-index: 2;
-
-  /* display: flex; */
-}
-
 .prize {
-  background: #333;
+  background-color: white;
   position: absolute;
   z-index: 1;
-  width: 100%;
+  width: inherit;
+  align-self: center;
+  justify-self: center;
 }
 
 /* When the checkbox is checked... */
@@ -51,28 +53,21 @@ h2 {
 /* Slide the first panel in */
 input[type="checkbox"]:checked ~ div.curtain__panel--left {
   transform: translateX(0);
+  padding-left: 2rem;
 }
 
 /* Slide the second panel in */
 input[type="checkbox"]:checked ~ div.curtain__panel--right {
   transform: translateX(0);
+  padding-left: 2rem;
 }
 
-input[type="checkbox"] {
-  position: absolute; /* Force the checkbox at the start of the container */
-  cursor: pointer; /* Indicate the curtain is clickable */
-  width: 100%; /* The checkbox is as wide as the component */
-  height: 100vh; /* The checkbox is as tall as the component */
-  z-index: 100; /* Make sure the checkbox is on top of everything else */
-  opacity: 0; /*Hide the checkbox*/
-  top: 0;
-  left: 0;
-}
 .curtain__panel {
   background: rgb(82, 105, 57);
-  align-items: center;
+  /* align-items: center;
+  justify-items: center; */
   width: 50%; /* Each panel takes up half the container */
-  height: 10vh; /* Used for demo purposes */
+  height: 5rem; /* Used for demo purposes */
   float: left; /* Makes sure panels are side-by-side */
   position: relative; /* Needed to define the z-index */
   z-index: 2; /* Places the panels in front of the prize */
@@ -81,14 +76,16 @@ input[type="checkbox"] {
 
 /* Slide the panel to the left out of the container */
 .curtain__panel--left {
-  justify-content: flex-end;
-  transform: translateX(-100%);
+  transform: translateX(-150%);
+  width: 7rem;
+  height: 3rem;
 }
 
 /* Slide the panel to the right out of the container */
 .curtain__panel--right {
-  transform: translateX(100%);
-  /* justify-content: flex-end; */
+  transform: translateX(150%);
+  width: 7rem;
+  height: 3rem;
 }
 .button {
   width: 7rem;
