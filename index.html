@@ -1,218 +1,695 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Advent Calendar</title>
+    <title>🎄 Advent Calendar 2024 🎄</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Georgia", serif;
+        background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+        min-height: 100vh;
+        padding: 20px;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* Animated snowflakes */
+      .snowflake {
+        position: fixed;
+        top: -10px;
+        color: white;
+        font-size: 1em;
+        opacity: 0.8;
+        animation: fall linear infinite;
+        z-index: 1;
+      }
+
+      @keyframes fall {
+        to {
+          transform: translateY(100vh);
+        }
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 40px;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      h1 {
+        font-size: 3.5em;
+        margin-bottom: 10px;
+        color: #fff;
+        text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      }
+
+      .subtitle {
+        font-size: 1.2em;
+        color: #ffd700;
+        font-style: italic;
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .door {
+        aspect-ratio: 1;
+        background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      /* Ribbon horizontal */
+      .door::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 20%;
+        background: linear-gradient(
+          to bottom,
+          #ffd700 0%,
+          #ffed4e 50%,
+          #ffd700 100%
+        );
+        transform: translateY(-50%);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+        transition: all 0.5s ease;
+      }
+
+      /* Ribbon vertical */
+      .door::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 20%;
+        background: linear-gradient(
+          to right,
+          #ffd700 0%,
+          #ffed4e 50%,
+          #ffd700 100%
+        );
+        transform: translateX(-50%);
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        z-index: 1;
+        transition: all 0.5s ease;
+      }
+
+      /* Bow */
+      .bow {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        font-size: 2em;
+        transition: all 0.5s ease;
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      }
+
+      .door:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+      }
+
+      .door-number {
+        font-size: 2em;
+        font-weight: bold;
+        color: #fff;
+        text-shadow:
+          2px 2px 4px rgba(0, 0, 0, 0.9),
+          0 0 10px rgba(0, 0, 0, 0.5),
+          -1px -1px 0 rgba(0, 0, 0, 0.3),
+          1px -1px 0 rgba(0, 0, 0, 0.3),
+          -1px 1px 0 rgba(0, 0, 0, 0.3),
+          1px 1px 0 rgba(0, 0, 0, 0.3);
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        z-index: 3;
+        background: rgba(0, 0, 0, 0.4);
+        padding: 5px 12px;
+        border-radius: 8px;
+        line-height: 1;
+      }
+
+      .door-icon {
+        font-size: 2em;
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 3;
+        color: #90ee90;
+        text-shadow: 0 0 10px rgba(144, 238, 144, 0.8);
+      }
+
+      /* Test box styling */
+      .door.test-box {
+        background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+        border: 3px dashed #ffd700;
+      }
+
+      .door.test-box .door-number {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      /* Opening animation */
+      .door.opening::before {
+        animation: ribbonHorizontalOpen 0.6s ease forwards;
+      }
+
+      .door.opening::after {
+        animation: ribbonVerticalOpen 0.6s ease forwards;
+      }
+
+      .door.opening .bow {
+        animation: bowPop 0.6s ease forwards;
+      }
+
+      @keyframes ribbonHorizontalOpen {
+        0% {
+          transform: translateY(-50%) scaleY(1);
+          opacity: 1;
+        }
+        50% {
+          transform: translateY(-50%) scaleY(1.2);
+        }
+        100% {
+          transform: translateY(-200%) scaleY(0);
+          opacity: 0;
+        }
+      }
+
+      @keyframes ribbonVerticalOpen {
+        0% {
+          transform: translateX(-50%) scaleX(1);
+          opacity: 1;
+        }
+        50% {
+          transform: translateX(-50%) scaleX(1.2);
+        }
+        100% {
+          transform: translateX(200%) scaleX(0);
+          opacity: 0;
+        }
+      }
+
+      @keyframes bowPop {
+        0% {
+          transform: translate(-50%, -50%) scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.5) rotate(20deg);
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(0) rotate(180deg);
+          opacity: 0;
+        }
+      }
+
+      .door.opened {
+        background: linear-gradient(135deg, #2d5016 0%, #1a3d0a 100%);
+      }
+
+      .door.opened::before,
+      .door.opened::after {
+        display: none;
+      }
+
+      .door.opened .bow {
+        display: none;
+      }
+
+      .door.locked {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .door.locked:hover {
+        transform: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .door.today {
+        animation: pulse 2s infinite;
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+      }
+
+      .door.today::before,
+      .door.today::after {
+        animation: pulseRibbon 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+        }
+        50% {
+          box-shadow: 0 0 50px rgba(255, 215, 0, 1);
+        }
+      }
+
+      @keyframes pulseRibbon {
+        0%,
+        100% {
+          filter: brightness(1);
+        }
+        50% {
+          filter: brightness(1.3);
+        }
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+        padding: 40px;
+        border-radius: 20px;
+        max-width: 500px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 10px 50px rgba(255, 215, 0, 0.5);
+        border: 3px solid #ffd700;
+        position: relative;
+        animation: modalSlideIn 0.5s ease;
+      }
+
+      @keyframes modalSlideIn {
+        from {
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .modal-day {
+        font-size: 2.5em;
+        color: #c41e3a;
+        margin-bottom: 20px;
+        font-weight: bold;
+      }
+
+      .modal-message {
+        font-size: 1.3em;
+        color: #2d5016;
+        margin-bottom: 30px;
+        line-height: 1.6;
+      }
+
+      .modal-icon {
+        font-size: 4em;
+        margin-bottom: 20px;
+      }
+
+      .close-btn {
+        background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 30px;
+        font-size: 1.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      .close-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(196, 30, 58, 0.4);
+      }
+
+      footer {
+        text-align: center;
+        color: white;
+        margin-top: 40px;
+        font-size: 0.9em;
+        opacity: 0.8;
+      }
+
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2.5em;
+        }
+
+        .calendar-grid {
+          grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+          gap: 15px;
+        }
+
+        .door-number {
+          font-size: 2em;
+        }
+      }
+    </style>
   </head>
   <body>
-    <h2>Christmas Calendar</h2>
     <div class="container">
-      <div class="curtain">
-        <div class="button1__wrapper">
-          <input class="check check1" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">1st</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check2" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">2nd</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check3" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">3rd</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check4" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">4th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check5" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">5th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check6" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize__container">
-            <div class="prize">Hello</div>
-          </div>
-          <div class="curtain__panel curtain__panel--right">6th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check7" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">7th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check8" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">8th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check9" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">9th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check10" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">10th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check11" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">11th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check12" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">12th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check13" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">13th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check14" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">14th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check15" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">15th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check16" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">16th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check17" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">17th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check18" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">18th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check19" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">19th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check20" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">20th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check21" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">21st</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check22" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">22nd</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check23" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">23rd</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check24" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">24th</div>
-        </div>
-      </div>
-      <div class="curtain">
-        <div class="button__wrapper">
-          <input class="check check25" type="checkbox" checked />
-          <div class="curtain__panel curtain__panel--left">Dec</div>
-          <div class="prize">Hello</div>
-          <div class="curtain__panel curtain__panel--right">25th</div>
-        </div>
+      <header>
+        <h1>🎄 Advent Calendar 🎄</h1>
+        <p class="subtitle">Count down to Christmas with daily surprises!</p>
+      </header>
+
+      <div class="calendar-grid" id="calendar"></div>
+
+      <footer>
+        <p>✨ May your days be merry and bright ✨</p>
+      </footer>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <div class="modal-icon" id="modalIcon"></div>
+        <div class="modal-day" id="modalDay"></div>
+        <div class="modal-message" id="modalMessage"></div>
+        <button class="close-btn" onclick="closeModal()">Close</button>
       </div>
     </div>
-    <!-- <script src="/script.js"></script> -->
-    <link href="/style.css" rel="stylesheet" />
+
+    <script>
+      // Surprise messages for each day
+      const surprises = {
+        0: {
+          icon: "🧪",
+          message:
+            "This is a TEST BOX! It works perfectly! Now try the real advent calendar doors starting December 1st!",
+        },
+        1: {
+          icon: "🎅",
+          message:
+            "Ho ho ho! Santa's checking his list twice. Have you been naughty or nice?",
+        },
+        2: {
+          icon: "⛄",
+          message: "Do you want to build a snowman? Let's go and play!",
+        },
+        3: {
+          icon: "🎁",
+          message:
+            "The best gift is spending time with loved ones. Call someone special today!",
+        },
+        4: {
+          icon: "🕯️",
+          message: "Light a candle and enjoy the cozy winter ambiance.",
+        },
+        5: {
+          icon: "🦌",
+          message:
+            "Rudolph's nose is glowing bright! Can you name all of Santa's reindeer?",
+        },
+        6: {
+          icon: "🎄",
+          message: "Time to decorate the tree! Don't forget the star on top!",
+        },
+        7: {
+          icon: "❄️",
+          message:
+            "Every snowflake is unique, just like you! Embrace your individuality.",
+        },
+        8: {
+          icon: "🔔",
+          message:
+            "Jingle bells, jingle bells, jingle all the way! Spread some joy today!",
+        },
+        9: {
+          icon: "🧦",
+          message: "Hang your stockings by the fireplace with care!",
+        },
+        10: { icon: "⭐", message: "Make a wish upon a winter star tonight!" },
+        11: {
+          icon: "🍪",
+          message: "Bake some cookies for Santa! Don't forget the milk!",
+        },
+        12: {
+          icon: "🎵",
+          message:
+            "Sing your favorite Christmas carol at the top of your lungs!",
+        },
+        13: {
+          icon: "🏠",
+          message: "There's no place like home for the holidays!",
+        },
+        14: {
+          icon: "🎿",
+          message: "Winter sports season is here! Time to hit the slopes!",
+        },
+        15: { icon: "🧤", message: "Cozy up with warm mittens and hot cocoa!" },
+        16: {
+          icon: "🎪",
+          message: "The magic of Christmas is in the air! Can you feel it?",
+        },
+        17: {
+          icon: "📖",
+          message:
+            "Read 'A Christmas Carol' or watch your favorite holiday movie!",
+        },
+        18: {
+          icon: "🌟",
+          message: "You're a shining star! Keep spreading kindness!",
+        },
+        19: {
+          icon: "🎺",
+          message:
+            "The angels are singing! What's your favorite Christmas hymn?",
+        },
+        20: {
+          icon: "🧝",
+          message:
+            "Santa's elves are working overtime! The big day is almost here!",
+        },
+        21: { icon: "🎀", message: "Wrap your presents with love and care!" },
+        22: {
+          icon: "🌲",
+          message: "Walk in a winter wonderland and enjoy nature's beauty!",
+        },
+        23: {
+          icon: "🎊",
+          message: "The countdown is almost over! Tomorrow is Christmas Eve!",
+        },
+        24: {
+          icon: "🌙",
+          message:
+            "It's Christmas Eve! Santa's on his way! Sweet dreams tonight!",
+        },
+        25: {
+          icon: "🎉",
+          message:
+            "MERRY CHRISTMAS! May your day be filled with love, joy, and magic! 🎄✨",
+        },
+      };
+
+      // Create snowflakes
+      function createSnowflakes() {
+        for (let i = 0; i < 50; i++) {
+          const snowflake = document.createElement("div");
+          snowflake.className = "snowflake";
+          snowflake.innerHTML = "❄";
+          snowflake.style.left = Math.random() * 100 + "%";
+          snowflake.style.animationDuration = Math.random() * 10 + 10 + "s";
+          snowflake.style.animationDelay = Math.random() * 5 + "s";
+          snowflake.style.fontSize = Math.random() * 5 + 10 + "px";
+          document.body.appendChild(snowflake);
+        }
+      }
+
+      // Get today's date
+      function getTodayDay() {
+        const today = new Date();
+        const month = today.getMonth();
+        const day = today.getDate();
+
+        // Only return day if it's December and between 1-25
+        if (month === 11 && day >= 1 && day <= 25) {
+          return day;
+        }
+        return null;
+      }
+
+      // Create calendar doors
+      function createCalendar() {
+        const calendar = document.getElementById("calendar");
+        const today = getTodayDay();
+        const openedDoors =
+          JSON.parse(localStorage.getItem("openedDoors")) || [];
+
+        // Create TEST BOX (day 0) - always available and always resets
+        const testDoor = document.createElement("div");
+        testDoor.className = "door test-box";
+        // Test box never stays opened
+
+        testDoor.innerHTML = `
+                <div class="bow">🎀</div>
+                <div class="door-number">TEST</div>
+                <div class="door-icon"></div>
+            `;
+
+        testDoor.addEventListener("click", () => openDoor(0, true, false));
+        calendar.appendChild(testDoor);
+
+        // Create regular calendar doors (1-24)
+        for (let i = 1; i <= 24; i++) {
+          const door = document.createElement("div");
+          door.className = "door";
+
+          // Check if door can be opened
+          const canOpen = today !== null && i <= today;
+          const isOpened = openedDoors.includes(i);
+
+          if (isOpened) {
+            door.classList.add("opened");
+          } else if (!canOpen) {
+            door.classList.add("locked");
+          }
+
+          if (i === today && !isOpened) {
+            door.classList.add("today");
+          }
+
+          door.innerHTML = `
+                    <div class="bow">🎀</div>
+                    <div class="door-number">${i}</div>
+                    <div class="door-icon">${isOpened ? "✓" : ""}</div>
+                `;
+
+          door.addEventListener("click", () => openDoor(i, canOpen, isOpened));
+          calendar.appendChild(door);
+        }
+      }
+
+      // Open a door
+      function openDoor(day, canOpen, isOpened) {
+        if (!canOpen) {
+          showModal(day, {
+            icon: "🔒",
+            message:
+              "Patience, young Padawan! This door isn't ready to open yet. Come back on December " +
+              day +
+              "th!",
+          });
+          return;
+        }
+
+        if (isOpened && day !== 0) {
+          // Allow test box to be reopened
+          showModal(
+            day,
+            surprises[day] || {
+              icon: "🎄",
+              message:
+                "You've already opened this door! But the magic remains!",
+            },
+          );
+          return;
+        }
+
+        // Get the door element
+        const doorElement = event.currentTarget;
+        doorElement.classList.add("opening");
+
+        // Wait for animation to complete before showing modal
+        setTimeout(() => {
+          // Mark as opened (except for test box)
+          if (day !== 0) {
+            const openedDoors =
+              JSON.parse(localStorage.getItem("openedDoors")) || [];
+            openedDoors.push(day);
+            localStorage.setItem("openedDoors", JSON.stringify(openedDoors));
+          }
+
+          // Show surprise
+          showModal(
+            day,
+            surprises[day] || { icon: "🎄", message: "Merry Christmas!" },
+          );
+
+          // Refresh calendar after modal closes
+          setTimeout(() => {
+            document.getElementById("calendar").innerHTML = "";
+            createCalendar();
+          }, 500);
+        }, 600);
+      }
+
+      // Show modal
+      function showModal(day, content) {
+        if (day === 0) {
+          document.getElementById("modalDay").textContent = "Test Box";
+        } else {
+          document.getElementById("modalDay").textContent = `December ${day}`;
+        }
+        document.getElementById("modalIcon").textContent = content.icon;
+        document.getElementById("modalMessage").textContent = content.message;
+        document.getElementById("modal").classList.add("active");
+      }
+
+      // Close modal
+      function closeModal() {
+        document.getElementById("modal").classList.remove("active");
+      }
+
+      // Close modal when clicking outside
+      document.getElementById("modal").addEventListener("click", (e) => {
+        if (e.target.id === "modal") {
+          closeModal();
+        }
+      });
+
+      // Initialize
+      createSnowflakes();
+      createCalendar();
+    </script>
   </body>
 </html>
